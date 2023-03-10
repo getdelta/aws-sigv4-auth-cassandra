@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@aws-sdk/credential-providers": "^3.288.0",
-    "cassandra-driver": "^4.6.3",
+    "cassandra-driver": "^4.6.4",
     "crypto-js": "^4.0.0",
     "jsdoc": "^3.6.4"
   }

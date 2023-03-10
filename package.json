@@ -2,10 +2,12 @@
   "name": "@getdelta/aws-sigv4-auth-cassandra",
   "version": "1.0.0",
   "description": "A sigv4 authentication plugin for open-source Datastax NodeJS Driver for Apache Cassandra",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "mocha test/unit -R spec -t 5000 --recursive",
-    "build-jsdocs": "jsdoc -c ./jsdoc-config.json"
+    "clean": "rm -rf dist",
+    "build": "yarn clean && tsup index.ts --clean --minify --keep-names --dts --out-dir dist",
+    "build:watch": "yarn clean && tsup index.ts --clean --minify --keep-names --dts --watch --out-dir dist"
   },
   "keywords": [
     "cassandra",
@@ -35,7 +37,9 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^7.2.0"
+    "mocha": "^7.2.0",
+    "tsup": "^6.6.3",
+    "typescript": "^4.9.5"
   },
   "dependencies": {
     "@aws-sdk/credential-providers": "^3.288.0",

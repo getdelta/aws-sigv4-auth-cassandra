@@ -1,22 +1,4 @@
-/*
- *   Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- *   Licensed under the Apache License, Version 2.0 (the "License").
- *   You may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
- */
-
-"use strict";
-
-let CryptoJS = require("crypto-js");
+const CryptoJS = require("crypto-js");
 
 const CASSANDRA_SERVICE_NAME = "cassandra";
 const AWS4_SIGNING_ALGORITHM = "AWS4-HMAC-SHA256";
@@ -30,7 +12,7 @@ const V4_IDENTIFIER = "aws4_request";
  * @returns {WordArray} constituting the signture
  * @private
  */
-function computeSignature(stringToSign, signingKey) {
+function computeSignature(stringToSign: string, signingKey: string[]) {
   return CryptoJS.HmacSHA256(stringToSign, signingKey);
 }
 
@@ -44,7 +26,12 @@ function computeSignature(stringToSign, signingKey) {
  * @returns {string} full authentication string
  * @private
  */
-function formSignedString(signature, accessKeyId, isoDateString, sessionToken) {
+function formSignedString(
+  signature: string,
+  accessKeyId: string,
+  isoDateString: string,
+  sessionToken?: string
+) {
   let result = `signature=${signature},access_key=${accessKeyId},amzdate=${isoDateString}`;
 
   if (sessionToken) {
@@ -64,7 +51,11 @@ function formSignedString(signature, accessKeyId, isoDateString, sessionToken) {
  * @returns {WordArray} binary chunk representing the signing key.
  * @private
  */
-function deriveSigningKey(secretAccessKey, credentialDateStamp, region) {
+function deriveSigningKey(
+  secretAccessKey: string,
+  credentialDateStamp: string,
+  region: string
+) {
   let secret = "AWS4" + secretAccessKey;
   let dateHmac = CryptoJS.HmacSHA256(credentialDateStamp, secret);
   let regionHmac = CryptoJS.HmacSHA256(region, dateHmac);
@@ -81,7 +72,7 @@ function deriveSigningKey(secretAccessKey, credentialDateStamp, region) {
  * @returns {string} aws credential timestamp
  * @private
  */
-function toCredentialDateStamp(date) {
+function toCredentialDateStamp(date: Date) {
   let result = date.toISOString().replace(/[:\-]|\.\d{3}/g, "");
 
   return result.substring(0, 8);
@@ -98,7 +89,11 @@ function toCredentialDateStamp(date) {
  * authentication
  * @private
  */
-function createStringToSign(canonicalRequest, isoDateString, signingScope) {
+function createStringToSign(
+  canonicalRequest: string,
+  isoDateString: string,
+  signingScope: string
+) {
   let digest = CryptoJS.SHA256(canonicalRequest);
 
   return `${AWS4_SIGNING_ALGORITHM}\n${isoDateString}\n${signingScope}\n${digest}`;
@@ -112,7 +107,7 @@ function createStringToSign(canonicalRequest, isoDateString, signingScope) {
  * @returns {string} for example '20200609/us-west-2/cassandra/aws4_request'
  * @private
  */
-function deriveSigningScope(credentialDateStamp, region) {
+function deriveSigningScope(credentialDateStamp: string, region: string) {
   return [
     credentialDateStamp,
     region,
@@ -121,11 +116,11 @@ function deriveSigningScope(credentialDateStamp, region) {
   ].join("/");
 }
 
-function formatXAmzCred(accessKeyId, scope) {
+function formatXAmzCred(accessKeyId: string, scope: string) {
   return `X-Amz-Credential=${accessKeyId}%2F${encodeURIComponent(scope)}`;
 }
 
-function formatXAmzDate(timestamp) {
+function formatXAmzDate(timestamp: string) {
   return `X-Amz-Date=${encodeURIComponent(timestamp)}`;
 }
 
@@ -144,10 +139,10 @@ const AMZ_EXPIRES_HEADER = "X-Amz-Expires=900";
  * @private
  */
 function deriveCanonicalRequest(
-  accessKeyId,
-  signingScope,
-  isoDateString,
-  nonceHash
+  accessKeyId: string,
+  signingScope: string,
+  isoDateString: string,
+  nonceHash: string
 ) {
   let headers = [
     ADZ_ALGORITHM_HEADER,
@@ -193,6 +188,13 @@ function computeSigV4SignatureCassandraRequest({
   accessKeyId,
   secretAccessKey,
   sessionToken,
+}: {
+  region: string;
+  nonce?: string;
+  date: Date;
+  accessKeyId: string;
+  secretAccessKey: string;
+  sessionToken?: string;
 }) {
   let isoDate = date.toISOString();
   let credentialDateStamp = toCredentialDateStamp(date);
@@ -241,7 +243,7 @@ const testingOnly = {
   },
 };
 
-module.exports = {
+export default {
   computeSigV4SignatureCassandraRequest: computeSigV4SignatureCassandraRequest,
   testingOnly: testingOnly,
 };

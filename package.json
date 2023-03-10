@@ -4,48 +4,33 @@
   "description": "A sigv4 authentication plugin for open-source Datastax NodeJS Driver for Apache Cassandra",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist/*",
+    "package.json"
+  ],
+  "author": "Delta",
+  "repository": {
+    "url": "https://github.com/getdelta/aws-sigv4-auth-cassandra"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "scripts": {
     "clean": "rm -rf dist",
     "build": "yarn clean && tsup index.ts --clean --minify --keep-names --dts --out-dir dist",
     "build:watch": "yarn clean && tsup index.ts --clean --minify --keep-names --dts --watch --out-dir dist",
     "check:typescript": "tsc --noEmit --skipLibCheck --project ."
   },
-  "keywords": [
-    "cassandra",
-    "cql",
-    "sigv4",
-    "connection",
-    "driver",
-    "aws"
-  ],
-  "author": {
-    "name": "Amazon Web Services",
-    "email": "",
-    "url": "https://aws.amazon.com/"
-  },
-  "homepage": "https://github.com/aws/aws-sigv4-auth-cassandra-nodejs-driver-plugin",
-  "license": "Apache-2.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/aws/aws-sigv4-auth-cassandra-nodejs-driver-plugin"
-  },
-  "bugs": {
-    "url": "https://github.com/aws/aws-sigv4-auth-cassandra-nodejs-driver-plugin/issues",
-    "mail": ""
-  },
-  "engines": {
-    "node": ">= 0.8.0"
+  "dependencies": {
+    "@aws-sdk/credential-providers": "^3.288.0",
+    "cassandra-driver": "^4.6.4",
+    "crypto-js": "^4.0.0",
+    "jsdoc": "^3.6.4"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "mocha": "^7.2.0",
     "tsup": "^6.6.3",
     "typescript": "^4.9.5"
-  },
-  "dependencies": {
-    "@aws-sdk/credential-providers": "^3.288.0",
-    "cassandra-driver": "^4.6.4",
-    "crypto-js": "^4.0.0",
-    "jsdoc": "^3.6.4"
   }
 }
